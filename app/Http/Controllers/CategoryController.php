@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
+
 class CategoryController extends ApiController
 {
     /**
@@ -32,6 +33,7 @@ class CategoryController extends ApiController
         $validator = Validator::make($request->all(), [
             'name' => 'required',
             'parent_id' => 'required|integer',
+            'description' => 'required|string',
         ]);
         if ($validator->fails()) {
             return $this->errorResponse($validator->messages(), 422);
@@ -41,10 +43,11 @@ class CategoryController extends ApiController
         $category = Category::create([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
+            'description' => $request->description,
         ]);
         DB::commit();
 
-        return $this->successResponse(new CategoryResource($category), 201);
+        return $this->successResponse(new CategoryResource($category));
     }
 
     /**
@@ -58,16 +61,38 @@ class CategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Category $category)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'name' => $request->name,
+            'parent_id' => $request->parent_id,
+            'description' => $request->description,
+        ]);
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->messages(), 422);
+        }
+
+        DB::beginTransaction();
+        $category ->update([
+            'name' => $request->name,
+            'parent_id' => $request->parent_id,
+            'description' => $request->description,
+        ]);
+        DB::commit();
+
+        return $this->successResponse(new CategoryResource($category));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category)
     {
-        //
+        DB::beginTransaction();
+        $category->delete();
+        DB::commit();
+        return $this->successResponse(new CategoryResource($category));
+
     }
 }
