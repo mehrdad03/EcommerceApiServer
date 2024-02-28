@@ -16,7 +16,12 @@ class BrandController extends ApiController
      */
     public function index()
     {
-        //
+        $brands = Brand::query()->paginate(2);
+        return $this->successResponse([
+            'brands' => BrandResource::collection($brands),
+            'links' => BrandResource::collection($brands)->response()->getData()->links,
+            'meta' => BrandResource::collection($brands)->response()->getData()->meta,
+        ]);
     }
 
     /**
@@ -45,9 +50,9 @@ class BrandController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Brand $brand)
     {
-        //
+        return $this->successResponse(new BrandResource($brand));
     }
 
     /**
