@@ -58,16 +58,32 @@ class BrandController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request,Brand $brand)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'display_name' => 'required|unique:brands',
+        ]);
+        if ($validator->fails()) {
+            return $this->errorResponse($validator->messages(), 422);
+        }
+
+        DB::beginTransaction();
+        $brand ->update([
+            'name' => $request->name,
+            'display_name' => $request->name,
+        ]);
+        DB::commit();
+
+        return $this->successResponse(new BrandResource($brand));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Brand $brand)
     {
-        //
+        $brand->delete();
+        return $this->successResponse(new BrandResource($brand));
     }
 }
