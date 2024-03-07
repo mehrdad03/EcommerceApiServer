@@ -14,6 +14,16 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends ApiController
 {
+    public function index()
+    {
+
+        $products = Product::query()->paginate(2);
+        return $this->successResponse([
+            'brands' => ProductResource::collection($products->load('images')),
+            'links' => ProductResource::collection($products)->response()->getData()->links,
+            'meta' => ProductResource::collection($products)->response()->getData()->meta,
+        ]);
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -67,5 +77,9 @@ class ProductController extends ApiController
         DB::commit();
 
         return $this->successResponse(new ProductResource($product), 201);
+    }
+    public function show(Product $product)
+    {
+        return $this->successResponse(new ProductResource($product->load('images')));
     }
 }
