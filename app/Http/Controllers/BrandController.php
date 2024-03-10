@@ -13,7 +13,7 @@ class BrandController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
         $brands = Brand::query()->paginate(2);
         return $this->successResponse([
@@ -26,7 +26,7 @@ class BrandController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -49,7 +49,7 @@ class BrandController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Brand $brand)
+    public function show(Brand $brand): \Illuminate\Http\JsonResponse
     {
         return $this->successResponse(new BrandResource($brand));
     }
@@ -57,7 +57,7 @@ class BrandController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,Brand $brand)
+    public function update(Request $request,Brand $brand): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -80,9 +80,13 @@ class BrandController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Brand $brand)
+    public function destroy(Brand $brand): \Illuminate\Http\JsonResponse
     {
         $brand->delete();
         return $this->successResponse(new BrandResource($brand));
+    }
+    public function products(Brand $brand): \Illuminate\Http\JsonResponse
+    {
+        return $this->successResponse(new BrandResource($brand->load('products')));
     }
 }

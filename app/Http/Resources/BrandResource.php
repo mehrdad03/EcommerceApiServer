@@ -16,9 +16,12 @@ class BrandResource extends JsonResource
     {
         //return parent::toArray($request);\
         return [
-            'id'=>$this->id,
-            'name'=>$this->name,
-            'display_name'=>$this->display_name,
+            'id' => $this->id,
+            'name' => $this->name,
+            'display_name' => $this->display_name,
+            'products' => ProductResource::collection($this->whenLoaded('products', function () {
+                return $this->products->load('images');
+            })),
         ];
     }
 }
