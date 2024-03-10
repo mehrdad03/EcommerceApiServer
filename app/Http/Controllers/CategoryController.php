@@ -14,7 +14,7 @@ class CategoryController extends ApiController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): \Illuminate\Http\JsonResponse
     {
 
         $brands = Category::query()->paginate(5);
@@ -28,7 +28,7 @@ class CategoryController extends ApiController
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request): \Illuminate\Http\JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -53,7 +53,7 @@ class CategoryController extends ApiController
     /**
      * Display the specified resource.
      */
-    public function show(Category $category)
+    public function show(Category $category): \Illuminate\Http\JsonResponse
     {
         return $this->successResponse(new CategoryResource($category));
     }
@@ -61,7 +61,7 @@ class CategoryController extends ApiController
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, Category $category): \Illuminate\Http\JsonResponse
     {
 
         $validator = Validator::make($request->all(), [
@@ -74,7 +74,7 @@ class CategoryController extends ApiController
         }
 
         DB::beginTransaction();
-        $category ->update([
+        $category->update([
             'name' => $request->name,
             'parent_id' => $request->parent_id,
             'description' => $request->description,
@@ -87,7 +87,7 @@ class CategoryController extends ApiController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category): \Illuminate\Http\JsonResponse
     {
         DB::beginTransaction();
         $category->delete();
@@ -96,13 +96,18 @@ class CategoryController extends ApiController
 
     }
 
-    public function children(Category $category)
+    public function children(Category $category): \Illuminate\Http\JsonResponse
     {
         return $this->successResponse(new CategoryResource($category->load('children')));
     }
 
-    public function parent(Category $category)
+    public function parent(Category $category): \Illuminate\Http\JsonResponse
     {
         return $this->successResponse(new CategoryResource($category->load('parent')));
+    }
+
+    public function products(Category $category): \Illuminate\Http\JsonResponse
+    {
+        return $this->successResponse(new CategoryResource($category->load('products')));
     }
 }
