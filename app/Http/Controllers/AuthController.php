@@ -25,7 +25,7 @@ class AuthController extends ApiController
         if ($validator->fails()) {
             return $this->errorResponse($validator->messages(), 422);
         }
-      /*  dd($request->all());*/
+        /*  dd($request->all());*/
 
         $user = User::create([
             'name' => $request->name,
@@ -43,6 +43,7 @@ class AuthController extends ApiController
             'token' => $token
         ]);
     }
+
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -70,5 +71,12 @@ class AuthController extends ApiController
             'user' => $user,
             'token' => $token
         ]);
+    }
+
+    public function logout(): \Illuminate\Http\JsonResponse
+    {
+        auth()->user()->tokens()->delete();
+        return $this->successResponse('log out');
+
     }
 }
