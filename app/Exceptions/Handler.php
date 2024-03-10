@@ -6,6 +6,7 @@ use App\Traits\ApiResponser;
 use Error;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\RelationNotFoundException;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Illuminate\Support\Facades\DB;
@@ -40,6 +41,10 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $e)
     {
         if ($e instanceof ModelNotFoundException) {
+            DB::rollBack();
+            return $this->errorResponse($e->getMessage(), 404);
+        }
+        if ($e instanceof RelationNotFoundException) {
             DB::rollBack();
             return $this->errorResponse($e->getMessage(), 404);
         }
